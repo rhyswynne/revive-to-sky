@@ -74,7 +74,7 @@ function dr_rts_get_tags()
  * Here so it isn't in the way. Also allows more than one of my plugins to be loaded on the same blog without any issues.
  */
 if (!function_exists('dwinrhys_print_newsletter_box')) {
-    function dwinrhys_print_newsletter_box($textdomain = 'dwinrhys')
+    function dwinrhys_print_newsletter_box()
     {
 ?>
         <div id="mlb2-21162946" class="ml-form-embedContainer ml-subscribe-form ml-subscribe-form-21162946">
@@ -84,8 +84,8 @@ if (!function_exists('dwinrhys_print_newsletter_box')) {
 
                         <div class="ml-form-embedContent" style=" ">
 
-                            <h2><?php _e('Get Notified for Updates', $textdomain); ?></h2>
-                            <p><?php _e('Sign up below to receive updates to this plugin, as well as a monthly newsletter on SEO and WordPress news. Subscription is free and you can unsubscribe at any time.', $textdomain); ?></p>
+                            <h2><?php esc_html_e('Get Notified for Updates', 'revive-to-sky'); ?></h2>
+                            <p><?php esc_html_e('Sign up below to receive updates to this plugin, as well as a monthly newsletter on SEO and WordPress news. Subscription is free and you can unsubscribe at any time.', 'revive-to-sky'); ?></p>
 
                         </div>
 
@@ -179,11 +179,11 @@ if (!function_exists('dwinrhys_print_newsletter_box')) {
 
                             <div class="ml-form-embedSubmit">
 
-                                <button type="submit" class="primary dr_button dr_button_primary"><?php _e('Subscribe', $textdomain); ?></button>
+                                <button type="submit" class="primary dr_button dr_button_primary"><?php esc_html_e('Subscribe', 'revive-to-sky'); ?></button>
 
                                 <button disabled="disabled" style="display: none;" type="button dr_button dr_button_disabled" class="loading">
                                     <div class="ml-form-embedSubmitLoad"></div>
-                                    <span class="sr-only"><?php _e('Loading...', $textdomain); ?></span>
+                                    <span class="sr-only"><?php esc_html_e('Loading...', 'revive-to-sky'); ?></span>
                                 </button>
                             </div>
 
@@ -196,9 +196,9 @@ if (!function_exists('dwinrhys_print_newsletter_box')) {
 
                         <div class="ml-form-successContent">
 
-                            <h2><?php _e('Thank you!', $textdomain); ?></h2>
+                            <h2><?php esc_html_e('Thank you!', 'revive-to-sky'); ?></h2>
 
-                            <p><?php _e('Thank you for your interest! To confirm, I have sent an email to you. Please click on that to subscribe!', $textdomain); ?></p>
+                            <p><?php esc_html_e('Thank you for your interest! To confirm, I have sent an email to you. Please click on that to subscribe!', 'revive-to-sky'); ?></p>
 
 
                         </div>
@@ -212,7 +212,7 @@ if (!function_exists('dwinrhys_print_newsletter_box')) {
 
 
 
-        <script>
+        <?php /* <script>
             function ml_webform_success_21162946() {
                 var $ = ml_jQuery || jQuery;
                 $('.ml-subscribe-form-21162946 .row-success').show();
@@ -221,10 +221,10 @@ if (!function_exists('dwinrhys_print_newsletter_box')) {
         </script>
 
 
-        <script src="https://groot.mailerlite.com/js/w/webforms.min.js?v176e10baa5e7ed80d35ae235be3d5024" type="text/javascript"></script>
+        
         <script>
             fetch("https://assets.mailerlite.com/jsonp/609353/forms/142144868274144703/takel")
-        </script>
+        </script> */ ?>
 <?php
     }
 }

@@ -1,14 +1,15 @@
 <?php
 
-function dr_rts_admin_init()
-{
-
-    if (array_key_exists('skeet', $_GET)) {
-        dr_rts_get_random_post_and_post_to_bluesky();    
+/**
+ * Simple debugging function so I can check if things are breaking
+ *
+ * @param  string  $message The message to log
+ * @param  boolean $print_r Whether to print the message as a string or as a print_r
+ * @return void
+ */
+function dr_rts_debug_log( $message ) {
+    if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+        error_log( 'Revive to Sky: ' . $message );
     }
-
-    if ( array_key_exists( 'get_random_post', $_GET ) ) {
-        $random_post = dr_rts_get_post_to_post_to_bluesky( -1 );
-        //wp_die( print_r( $random_post ) );
-    }
-} add_action( 'admin_init', 'dr_rts_admin_init' );
+}

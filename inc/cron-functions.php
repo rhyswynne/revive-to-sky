@@ -10,12 +10,15 @@
 function dr_rts_cron_event()
 {
 
+    
     $last_posted = get_option('dr_rts_last_post_posted', 0);
 
     if ( time() >= $last_posted ) {
+        dr_rts_debug_log( 'Running cron event' );
         dr_rts_get_random_post_and_post_to_bluesky();
+    } else {
+        dr_rts_debug_log( time() . ' is before ' . $last_posted . ' do not run the cron event' );
     }
-
 
 }
 add_action('dr_rts_cron_hook', 'dr_rts_cron_event');
@@ -41,6 +44,9 @@ function dr_rts_get_random_post_and_post_to_bluesky()
     $skeet = str_replace('%%POSTTITLE%%', get_the_title($ptbs), $skeet);
     $skeet = str_replace('%%POSTURL%%', get_permalink($ptbs), $skeet);
     $skeeturls = dt_rts_get_urls($skeet);
+
+    dr_rts_debug_log( 'Post to bluesky with title ' . get_the_title($ptbs) . '.' );
+    dr_rts_debug_log( 'Skeet: ' . $skeet );
 
     $links = array();
     if (!empty($skeeturls)) {
@@ -78,21 +84,21 @@ function dr_rts_get_random_post_and_post_to_bluesky()
             $response_body = dr_rts_get_refresh_token($refresh_token);
 
             if (array_key_exists('accessJwt', $response_body)) {
-                $access_token = $response_body['accessJwt'];
+                $access_token = esc_attr( $response_body['accessJwt'] );
             } else {
-                wp_die($auth_response->get_error_message());
+                wp_die( esc_attr( $auth_response->get_error_message() ) );
             }
         } else {
             $auth_response = dr_rts_get_authorisation_token();
 
             if (array_key_exists('accessJwt', $auth_response)) {
-                $access_token = $auth_response['accessJwt'];
+                $access_token = esc_attr($auth_response['accessJwt']);
             } else {
-                wp_die($auth_response->get_error_message());
+                wp_die( esc_attr( $auth_response->get_error_message() ) );
             }
 
             if (array_key_exists('did', $auth_response)) {
-                $did = $auth_response['did'];
+                $did = esc_attr($auth_response['did']);
             }
         }
     }
@@ -102,6 +108,9 @@ function dr_rts_get_random_post_and_post_to_bluesky()
         $embed = dt_rts_create_link_card(get_the_id($ptbs), $access_token);
 
         $skeet_response = dr_rts_post_to_bluesky($skeet, $links, $embed, $access_token, $did);
+
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+        dr_rts_debug_log( 'Skeet Response: ' . print_r( $skeet_response, true ) );
 
         //wp_die( print_r( $skeet_response ) );
         if (array_key_exists('uri', $skeet_response)) {
@@ -143,13 +152,13 @@ function dr_rts_get_random_post_and_post_to_bluesky()
 
                     $repost_time = time() + $transient_time;
 
-                    error_log( "Current Time: " . $repost_time );
-
                     $message = "Post ID " . get_the_id($ptbs) . " (" . get_the_title($ptbs) . ") posted to bluesky at URL: https://bsky.app/profile/{$handle}/post/{$slug}/";
                     update_option('dr_rts_last_post_message', $message);
                     update_option('dr_rts_last_post_posted', $repost_time);
                 }
             }
         }
+    } else {
+        dr_rts_debug_log( "Missing access token or did" );
     }
 }

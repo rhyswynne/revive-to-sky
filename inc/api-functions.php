@@ -55,11 +55,13 @@ function dr_rts_post_to_bluesky($message, $links, $embed, $access_token, $did)
     $response_body = json_decode(wp_remote_retrieve_body($response), true);
 
     if ($response_code !== 200) {
+        
         return new WP_Error(
             'api_error',
             sprintf(
-                __('Bluesky API error: %s', 'dr_rts'),
-                isset($response_body['message']) ? $response_body['message'] : __('Unknown error', 'dr_rts')
+                /* translators: 1: Error returned from Bluesky API. */
+                __('Bluesky API error: %s', 'revive-to-sky'),
+                isset($response_body['message']) ? $response_body['message'] : __('Unknown error', 'revive-to-sky')
             )
         );
     }
@@ -116,7 +118,7 @@ function dr_rts_get_authorisation_token()
 
     // Validate credentials exist
     if (empty($handle) || empty($app_password)) {
-        return new WP_Error('missing_credentials', __('Bluesky handle or app password not configured', 'dr_rts'));
+        return new WP_Error('missing_credentials', __('Bluesky handle or app password not configured', 'revive-to-sky'));
     }
 
     // Build request body
@@ -153,8 +155,9 @@ function dr_rts_get_authorisation_token()
         return new WP_Error(
             'api_error',
             sprintf(
-                __('Bluesky API error: %s', 'dr_rts'),
-                isset($response_body['message']) ? $response_body['message'] : __('Unknown error', 'dr_rts')
+                /* translators: 1: Error returned from Bluesky API. */
+                __('Bluesky API error: %s', 'revive-to-sky'),
+                isset($response_body['message']) ? $response_body['message'] : __('Unknown error', 'revive-to-sky')
             )
         );
     }
@@ -177,7 +180,7 @@ function dr_rts_get_refresh_token($refresh_token)
 
     // Validate credentials exist
     if (empty($handle) || empty($app_password)) {
-        return new WP_Error('missing_credentials', __('Bluesky handle or app password not configured', 'dr_rts'));
+        return new WP_Error('missing_credentials', __('Bluesky handle or app password not configured', 'revive-to-sky'));
     }
 
     // Build request args
@@ -208,8 +211,9 @@ function dr_rts_get_refresh_token($refresh_token)
         return new WP_Error(
             'api_error',
             sprintf(
-                __('Bluesky API error: %s', 'dr_rts'),
-                isset($response_body['message']) ? $response_body['message'] : __('Unknown error', 'dr_rts')
+                /* translators: 1: Error returned from Bluesky API. */
+                __('Bluesky API error: %s', 'revive-to-sky'),
+                isset($response_body['message']) ? $response_body['message'] : __('Unknown error', 'revive-to-sky')
             )
         );
     }
