@@ -12,11 +12,6 @@ Description
 -----------
 Revive To Sky is a WordPress plugin that helps you automatically share your old blog posts to [Bluesky](https://bsky.app/), helping you increase traffic and engagement on your website. The plugin runs on a scheduled basis, ensuring your content reaches new audiences without manual intervention.
 
-# For Support
-# -----------
-# For urgent, paid support, please visit [dwinrhys.com/contact-me](https://dwinrhys.com/contact-me/).
-# For general support and questions, please use the [WordPress.org forums](https://wordpress.org/support/plugin/revive-to-sky/).
-
 Installation
 ------------
 1. **WordPress Plugin Directory**:
@@ -38,4 +33,4 @@ Installation
 
 Bug Fixes
 ---------
-Bug fixes will be tracked here on Github in the [issues](https://github.com/rhyswynne/preload-lcp-image-wordpress/issues) section.
+Bug fixes will be tracked here on Github in the [issues](https://github.com/rhyswynne/revive-to-sky/issues) section.
