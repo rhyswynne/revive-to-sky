@@ -1,15 +1,17 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 /**
  * Register the Revive To Sky Options Menu
  * @return void
  */
-function dr_rts_options()
+function revivetosky_options()
 {
-    $options_suffix = add_options_page('Revive To Sky', 'Revive To Sky', 'manage_options', 'revivetosky', 'dt_rts_options_page');
-    add_action('load-' . $options_suffix, 'dr_rts_enqueue_on_option_page');
+    $options_suffix = add_options_page('Revive To Sky', 'Revive To Sky', 'manage_options', 'revivetosky', 'revivetosky_options_page');
+    add_action('load-' . $options_suffix, 'revivetosky_enqueue_on_option_page');
 }
-add_action('admin_menu', 'dr_rts_options');
+add_action('admin_menu', 'revivetosky_options');
 
 
 /**
@@ -17,103 +19,103 @@ add_action('admin_menu', 'dr_rts_options');
  *
  * @return void
  */
-function dr_rts_settings_init()
+function revivetosky_settings_init()
 {
-    register_setting('revive_to_sky', 'dr_rts_settings', array(
-        'sanitize_callback' => 'dr_rts_sanitize_settings',
+    register_setting('revive_to_sky', 'revivetosky_settings', array(
+        'sanitize_callback' => 'revivetosky_sanitize_settings',
     ));
 
     add_settings_section(
-        'dr_rts_admin_section',
+        'revivetosky_admin_section',
         __('Bluesky Connection Settings', 'revive-to-sky'),
-        'dr_rts_admin_section_callback',
+        'revivetosky_admin_section_callback',
         'revive_to_sky'
     );
 
     add_settings_field(
-        'dr_rts_bluesky_handle',
+        'revivetosky_bluesky_handle',
         __('Bluesky Handle', 'revive-to-sky'),
-        'dr_rts_bluesky_handle_render',
+        'revivetosky_bluesky_handle_render',
         'revive_to_sky',
-        'dr_rts_admin_section'
+        'revivetosky_admin_section'
     );
 
     add_settings_field(
-        'dr_rts_bluesky_app_password',
+        'revivetosky_bluesky_app_password',
         __('App Password', 'revive-to-sky'),
-        'dr_rts_bluesky_app_password_render',
+        'revivetosky_bluesky_app_password_render',
         'revive_to_sky',
-        'dr_rts_admin_section'
+        'revivetosky_admin_section'
     );
 
 
     add_settings_section(
-        'dr_rts_message_section',
+        'revivetosky_message_section',
         __('Bluesky Message Settings', 'revive-to-sky'),
-        'dr_rts_message_settings_callback',
+        'revivetosky_message_settings_callback',
         'revive_to_sky'
     );
 
 
     add_settings_field(
-        'dr_rts_message_every_settings',
+        'revivetosky_message_every_settings',
         __('Message Every...', 'revive-to-sky'),
-        'dr_rts_message_every_settings_render',
+        'revivetosky_message_every_settings_render',
         'revive_to_sky',
-        'dr_rts_message_section'
+        'revivetosky_message_section'
     );
 
-    $categories = dr_rts_get_categories();
+    $categories = revivetosky_get_categories();
 
     if ($categories) {
 
         add_settings_field(
-            'dr_rts_categories_to_include_settings',
+            'revivetosky_categories_to_include_settings',
             __('Categories to Include', 'revive-to-sky'),
-            'dr_rts_categories_to_include_render',
+            'revivetosky_categories_to_include_render',
             'revive_to_sky',
-            'dr_rts_message_section'
+            'revivetosky_message_section'
         );
 
         add_settings_field(
-            'dr_rts_categories_to_exclude_settings',
+            'revivetosky_categories_to_exclude_settings',
             __('Categories to Exclude', 'revive-to-sky'),
-            'dr_rts_categories_to_exclude_render',
+            'revivetosky_categories_to_exclude_render',
             'revive_to_sky',
-            'dr_rts_message_section'
+            'revivetosky_message_section'
         );
     }
 
-    $tags = dr_rts_get_tags();
+    $tags = revivetosky_get_tags();
 
     if ($tags) {
 
         add_settings_field(
-            'dr_rts_tags_to_include_settings',
+            'revivetosky_tags_to_include_settings',
             __('Tags to Include', 'revive-to-sky'),
-            'dr_rts_tags_to_include_render',
+            'revivetosky_tags_to_include_render',
             'revive_to_sky',
-            'dr_rts_message_section'
+            'revivetosky_message_section'
         );
 
         add_settings_field(
-            'dr_rts_tags_to_exclude_settings',
+            'revivetosky_tags_to_exclude_settings',
             __('Tags to Exclude', 'revive-to-sky'),
-            'dr_rts_tags_to_exclude_render',
+            'revivetosky_tags_to_exclude_render',
             'revive_to_sky',
-            'dr_rts_message_section'
+            'revivetosky_message_section'
         );
     }
 
     add_settings_field(
-        'dr_rts_message_templates',
+        'revivetosky_message_to_send',
         __('Message Template', 'revive-to-sky'),
-        'dr_rts_message_templates_render',
+        'revivetosky_message_templates_render',
         'revive_to_sky',
-        'dr_rts_message_section'
+        'revivetosky_message_section'
     );
 }
-add_action('admin_init', 'dr_rts_settings_init');
+add_action('admin_init', 'revivetosky_settings_init');
 
 
 /**
@@ -121,7 +123,7 @@ add_action('admin_init', 'dr_rts_settings_init');
  * 
  * @return void
  */
-function dr_rts_admin_section_callback() {}
+function revivetosky_admin_section_callback() {}
 
 
 /**
@@ -129,7 +131,7 @@ function dr_rts_admin_section_callback() {}
  * 
  * @return void
  */
-function dr_rts_message_settings_callback() {}
+function revivetosky_message_settings_callback() {}
 
 
 /**
@@ -137,12 +139,12 @@ function dr_rts_message_settings_callback() {}
  * 
  * @return void
  */
-function dr_rts_bluesky_handle_render()
+function revivetosky_bluesky_handle_render()
 {
 
-    $dr_rts_bluesky_handle = dr_rts_get_option('dr_rts_bluesky_handle');
+    $revivetosky_bluesky_handle = revivetosky_get_option('revivetosky_bluesky_handle');
 ?>
-    <input type='text' name='dr_rts_settings[dr_rts_bluesky_handle]' value='<?php echo esc_attr($dr_rts_bluesky_handle); ?>'><br />
+    <input type='text' name='revivetosky_settings[revivetosky_bluesky_handle]' value='<?php echo esc_attr($revivetosky_bluesky_handle); ?>'><br />
     <p class="description"><?php esc_html_e('Put your Bluesky Handle here.', 'revive-to-sky'); ?></p>
 <?php
 }
@@ -153,12 +155,12 @@ function dr_rts_bluesky_handle_render()
  * 
  * @return void
  */
-function dr_rts_bluesky_app_password_render()
+function revivetosky_bluesky_app_password_render()
 {
 
-    $dr_rts_bluesky_app_password = dr_rts_get_option('dr_rts_bluesky_app_password');
+    $revivetosky_bluesky_app_password = revivetosky_get_option('revivetosky_bluesky_app_password');
 ?>
-    <input type='text' name='dr_rts_settings[dr_rts_bluesky_app_password]' value='<?php echo esc_attr($dr_rts_bluesky_app_password); ?>' <br />
+    <input type='text' name='revivetosky_settings[revivetosky_bluesky_app_password]' value='<?php echo esc_attr($revivetosky_bluesky_app_password); ?>' <br />
     <p class="description">
         <?php
         printf(
@@ -189,22 +191,22 @@ function dr_rts_bluesky_app_password_render()
  * 
  * @return void
  */
-function dr_rts_message_every_settings_render()
+function revivetosky_message_every_settings_render()
 {
 
-    $dr_rts_message_every_settings = dr_rts_get_option('dr_rts_message_every_settings');
+    $revivetosky_message_every_settings = revivetosky_get_option('revivetosky_message_every_settings');
 
-    if (is_array($dr_rts_message_every_settings)) {
+    if (is_array($revivetosky_message_every_settings)) {
 
-        $rate_number    =  array_key_exists('number', $dr_rts_message_every_settings) ? $dr_rts_message_every_settings['number'] : false;
-        $rate_timeframe =  array_key_exists('timeframe', $dr_rts_message_every_settings) ? $dr_rts_message_every_settings['timeframe'] : false;
+        $rate_number    =  array_key_exists('number', $revivetosky_message_every_settings) ? $revivetosky_message_every_settings['number'] : false;
+        $rate_timeframe =  array_key_exists('timeframe', $revivetosky_message_every_settings) ? $revivetosky_message_every_settings['timeframe'] : false;
     } else {
         $rate_number = $rate_timeframe = false;
     }
 ?>
 
-    <input type='number' name='dr_rts_settings[dr_rts_message_every_settings][number]' value='<?php echo esc_attr($rate_number); ?>' min='1' step="1">
-    <select name='dr_rts_settings[dr_rts_message_every_settings][timeframe]'>
+    <input type='number' name='revivetosky_settings[revivetosky_message_every_settings][number]' value='<?php echo esc_attr($rate_number); ?>' min='1' step="1">
+    <select name='revivetosky_settings[revivetosky_message_every_settings][timeframe]'>
         <option value="hours" <?php selected($rate_timeframe, 'hours'); ?>><?php esc_html_e('Hours', 'revive-to-sky'); ?></option>
         <option value="days" <?php selected($rate_timeframe, 'days'); ?>><?php esc_html_e('Days', 'revive-to-sky'); ?></option>
         <option value="weeks" <?php selected($rate_timeframe, 'weeks'); ?>><?php esc_html_e('Weeks', 'revive-to-sky'); ?></option>
@@ -219,11 +221,11 @@ function dr_rts_message_every_settings_render()
  *
  * @return void
  */
-function dr_rts_categories_to_include_render()
+function revivetosky_categories_to_include_render()
 {
-    $selected_categories = dr_rts_get_option('dr_rts_categories_to_include_settings');
+    $selected_categories = revivetosky_get_option('revivetosky_ategories_to_include_settings');
 
-    $categories = dr_rts_get_categories();
+    $categories = revivetosky_get_categories();
 
     echo '<div class="dr-checkbox-list">';
 
@@ -232,7 +234,7 @@ function dr_rts_categories_to_include_render()
     ?>
         <label>
             <input type="checkbox"
-                name="dr_rts_settings[dr_rts_categories_to_include_settings][]"
+                name="revivetosky_settings[revivetosky_categories_to_include_settings][]"
                 value="<?php echo esc_attr($category->term_id); ?>"
                 <?php echo esc_attr( $is_checked ); ?>>
             <?php echo esc_html($category->name); ?>
@@ -252,11 +254,11 @@ function dr_rts_categories_to_include_render()
  *
  * @return void
  */
-function dr_rts_categories_to_exclude_render()
+function revivetosky_categories_to_exclude_render()
 {
-    $selected_categories = dr_rts_get_option('dr_rts_categories_to_exclude_settings');
+    $selected_categories = revivetosky_get_option('revivetosky_categories_to_exclude_settings');
 
-    $categories = dr_rts_get_categories();
+    $categories = revivetosky_get_categories();
 
     if (empty($categories)) {
         esc_html_e('No categories found.', 'revive-to-sky');
@@ -270,7 +272,7 @@ function dr_rts_categories_to_exclude_render()
     ?>
         <label>
             <input type="checkbox"
-                name="dr_rts_settings[dr_rts_categories_to_exclude_settings][]"
+                name="revivetosky_settings[revivetosky_categories_to_exclude_settings][]"
                 value="<?php echo esc_attr($category->term_id); ?>"
                 <?php echo esc_attr( $is_checked ); ?>>
             <?php echo esc_html($category->name); ?>
@@ -290,11 +292,11 @@ function dr_rts_categories_to_exclude_render()
  *
  * @return void
  */
-function dr_rts_tags_to_include_render()
+function revivetosky_tags_to_include_render()
 {
-    $selected_tags = dr_rts_get_option('dr_rts_tags_to_include_settings');
+    $selected_tags = revivetosky_get_option('revivetosky_tags_to_include_settings');
 
-    $tags = dr_rts_get_tags();
+    $tags = revivetosky_get_tags();
 
     echo '<div class="dr-checkbox-list">';
 
@@ -303,7 +305,7 @@ function dr_rts_tags_to_include_render()
     ?>
         <label>
             <input type="checkbox"
-                name="dr_rts_settings[dr_rts_tags_to_include_settings][]"
+                name="revivetosky_settings[revivetosky_tags_to_include_settings][]"
                 value="<?php echo esc_attr($tag->term_id); ?>"
                 <?php echo esc_attr( $is_checked ); ?>>
             <?php echo esc_html($tag->name); ?>
@@ -323,11 +325,11 @@ function dr_rts_tags_to_include_render()
  *
  * @return void
  */
-function dr_rts_tags_to_exclude_render()
+function revivetosky_tags_to_exclude_render()
 {
-    $selected_tags = dr_rts_get_option('dr_rts_tags_to_exclude_settings');
+    $selected_tags = revivetosky_get_option('revivetosky_tags_to_exclude_settings');
 
-    $tags = dr_rts_get_tags();
+    $tags = revivetosky_get_tags();
 
     echo '<div class="dr-checkbox-list">';
 
@@ -336,7 +338,7 @@ function dr_rts_tags_to_exclude_render()
     ?>
         <label>
             <input type="checkbox"
-                name="dr_rts_settings[dr_rts_tags_to_exclude_settings][]"
+                name="revivetosky_settings[revivetosky_tags_to_exclude_settings][]"
                 value="<?php echo esc_attr($tag->term_id); ?>"
                 <?php echo esc_attr( $is_checked ); ?>>
             <?php echo esc_html($tag->name); ?>
@@ -356,17 +358,16 @@ function dr_rts_tags_to_exclude_render()
  *
  * @return void
  */
-function dr_rts_message_templates_render()
+function revivetosky_message_templates_render()
 {
-    $dr_rts_message_to_send = dr_rts_get_option('dr_rts_message_to_send') ? dr_rts_get_option('dr_rts_message_to_send') : __('From the Archives: %%POSTTITLE%% - %%POSTURL%%', 'revive-to-sky');
-
+    $revivetosky_message_to_send = revivetosky_get_option('revivetosky_message_to_send') ? revivetosky_get_option('revivetosky_message_to_send') : __('From the Archives: %%POSTTITLE%% - %%POSTURL%%', 'revive-to-sky');
 ?>
     <textarea
-        name='dr_rts_settings[dr_rts_message_to_send]'
+        name='revivetosky_settings[revivetosky_message_to_send]'
         maxlength="300"
         rows="4"
         cols="50"
-        class="large-text"><?php echo esc_textarea($dr_rts_message_to_send); ?></textarea>
+        class="large-text"><?php echo esc_textarea($revivetosky_message_to_send); ?></textarea>
     <p class="description">
         <?php esc_html_e('Enter your message template. Use %%POSTTITLE%% for the post title and %%POSTURL%% for the post URL.', 'revive-to-sky'); ?>
     </p>
@@ -379,14 +380,14 @@ function dr_rts_message_templates_render()
  * 
  * @return void
  */
-function dt_rts_options_page()
+function revivetosky_options_page()
 {
 
     $current_user = wp_get_current_user();
 
 ?>
     <div class="dr_admin_wrap">
-        <h1><?php esc_html_e('Preload LCP Image Options', 'revive-to-sky'); ?></h1>
+        <h1><?php esc_html_e('Revive to Sky Options', 'revive-to-sky'); ?></h1>
 
         <div class="dr_admin_main_wrap">
             <div class="dr_admin_wrap_left">
@@ -405,15 +406,15 @@ function dt_rts_options_page()
             </div>
             <div class="dr_admin_wrap_right">
                 <div class="dr_box dr_box_highlighted">
-                    <h2><?php esc_html_e('Is Your WordPress Site Slow?', 'revive-to-sky'); ?></h2>
+                    <h2><?php esc_html_e('Custom WordPress Development for the masses', 'revive-to-sky'); ?></h2>
                     <p><img src="https://gravatar.com/avatar/13b432f781f24140731c6fe815e6d831?s=70&d=mm" alt="<?php esc_html_e('Rhys Wynne', 'revive-to-sky'); ?>" class="dr_avatar" />
-                        <?php esc_html_e("Hello! Dwi'n Rhys (I am Rhys in Welsh), and I am an experienced WordPress developer from the United Kingdom, specialising in WordPress perfomance automation, as well as API integration, maintenance and custom code projects. Let's talk and see what I can do for you!", "revive-to-sky"); ?>
+                        <?php esc_html_e("Hello! Dwi'n Rhys (I am Rhys in Welsh), and I am a WordPress developer from the United Kingdom with over 15+ years of Commercial WordPress experience. I love working with WordPress and helping businesses grow online. Let's talk and see what I can do for you!", "revive-to-sky"); ?>
                     </p>
-                    <p><a href="https://dwinrhys.com/wordpress-speed-optimisation/?utm_source=plugin-options&utm_medium=wordpress&utm_campaign=revive-to-sky" target="_blank" class="dr_button dr_button_primary"><?php esc_html_e("Get your site optimised!", "revive-to-sky"); ?></a></p>
+                    <p><a href="https://dwinrhys.com/custom-wordpress-development/?utm_source=plugin-options&utm_medium=wordpress&utm_campaign=revive-to-sky" target="_blank" class="dr_button dr_button_primary"><?php esc_html_e("Let's Talk!", "revive-to-sky"); ?></a></p>
                 </div>
 
                 <div class="dr_box">
-                    <?php dwinrhys_print_newsletter_box('revive_to_sky'); ?>
+                    <?php revivetosky_print_newsletter_box('revive_to_sky'); ?>
                 </div>
             </div>
         </div>
@@ -432,7 +433,7 @@ function dt_rts_options_page()
  * @param  array $value         The new value of the option.
  * @return void
  */
-function dr_rts_delete_last_posted_option($old_value, $value)
+function revivetosky_delete_last_posted_option($old_value, $value)
 {
 
     if (!is_array($value) || !array_key_exists('number', $value) || !array_key_exists('timeframe', $value)) {
@@ -448,9 +449,9 @@ function dr_rts_delete_last_posted_option($old_value, $value)
     }
 
     // If the settings have changed, delete the last post posted option
-    delete_option('dr_rts_last_post_posted');
+    delete_option('revivetosky_last_post_posted');
 }
-add_action('update_option_dr_rts_message_every_settings', 'dr_rts_delete_last_posted_option', 10, 2);
+add_action('update_option_revivetosky_message_every_settings', 'revivetosky_delete_last_posted_option', 10, 2);
 
 
 
@@ -460,50 +461,50 @@ add_action('update_option_dr_rts_message_every_settings', 'dr_rts_delete_last_po
  * @param array $input The settings input array.
  * @return array Sanitized settings array
  */
-function dr_rts_sanitize_settings($input) {
+function revivetosky_sanitize_settings($input) {
     $sanitized = array();
 
     // Bluesky Handle - sanitize as text
-    if (isset($input['dr_rts_bluesky_handle'])) {
-        $sanitized['dr_rts_bluesky_handle'] = sanitize_text_field($input['dr_rts_bluesky_handle']);
+    if (isset($input['revivetosky_bluesky_handle'])) {
+        $sanitized['revivetosky_bluesky_handle'] = sanitize_text_field($input['revivetosky_bluesky_handle']);
     }
 
     // App Password - sanitize as text
-    if (isset($input['dr_rts_bluesky_app_password'])) {
-        $sanitized['dr_rts_bluesky_app_password'] = sanitize_text_field($input['dr_rts_bluesky_app_password']);
+    if (isset($input['revivetosky_bluesky_app_password'])) {
+        $sanitized['revivetosky_bluesky_app_password'] = sanitize_text_field($input['revivetosky_bluesky_app_password']);
     }
 
     // Message Every Settings - sanitize number and timeframe
-    if (isset($input['dr_rts_message_every_settings'])) {
-        $sanitized['dr_rts_message_every_settings'] = array(
-            'number' => absint($input['dr_rts_message_every_settings']['number']),
-            'timeframe' => sanitize_text_field($input['dr_rts_message_every_settings']['timeframe'])
+    if (isset($input['revivetosky_message_every_settings'])) {
+        $sanitized['revivetosky_message_every_settings'] = array(
+            'number' => absint($input['revivetosky_message_every_settings']['number']),
+            'timeframe' => sanitize_text_field($input['revivetosky_message_every_settings']['timeframe'])
         );
     }
 
     // Categories to Include - sanitize array of IDs
-    if (isset($input['dr_rts_categories_to_include_settings'])) {
-        $sanitized['dr_rts_categories_to_include_settings'] = array_map('absint', (array) $input['dr_rts_categories_to_include_settings']);
+    if (isset($input['revivetosky_categories_to_include_settings'])) {
+        $sanitized['revivetosky_categories_to_include_settings'] = array_map('absint', (array) $input['revivetosky_categories_to_include_settings']);
     }
 
     // Categories to Exclude - sanitize array of IDs
-    if (isset($input['dr_rts_categories_to_exclude_settings'])) {
-        $sanitized['dr_rts_categories_to_exclude_settings'] = array_map('absint', (array) $input['dr_rts_categories_to_exclude_settings']);
+    if (isset($input['revivetosky_categories_to_exclude_settings'])) {
+        $sanitized['revivetosky_categories_to_exclude_settings'] = array_map('absint', (array) $input['revivetosky_categories_to_exclude_settings']);
     }
 
     // Tags to Include - sanitize array of IDs
-    if (isset($input['dr_rts_tags_to_include_settings'])) {
-        $sanitized['dr_rts_tags_to_include_settings'] = array_map('absint', (array) $input['dr_rts_tags_to_include_settings']);
+    if (isset($input['revivetosky_tags_to_include_settings'])) {
+        $sanitized['revivetosky_tags_to_include_settings'] = array_map('absint', (array) $input['revivetosky_tags_to_include_settings']);
     }
 
     // Tags to Exclude - sanitize array of IDs
-    if (isset($input['dr_rts_tags_to_exclude_settings'])) {
-        $sanitized['dr_rts_tags_to_exclude_settings'] = array_map('absint', (array) $input['dr_rts_tags_to_exclude_settings']);
+    if (isset($input['revivetosky_tags_to_exclude_settings'])) {
+        $sanitized['revivetosky_tags_to_exclude_settings'] = array_map('absint', (array) $input['revivetosky_tags_to_exclude_settings']);
     }
 
     // Message Template - sanitize textarea
-    if (isset($input['dr_rts_message_to_send'])) {
-        $sanitized['dr_rts_message_to_send'] = sanitize_textarea_field($input['dr_rts_message_to_send']);
+    if (isset($input['revivetosky_message_to_send'])) {
+        $sanitized['revivetosky_message_to_send'] = sanitize_textarea_field($input['revivetosky_message_to_send']);
     }
 
     return $sanitized;

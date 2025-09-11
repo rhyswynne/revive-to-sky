@@ -1,6 +1,6 @@
-=== Revive To Sky - Post old content to BlueSky ===
+=== Revive To Sky - Post old content to Bluesky ===
 Contributors: rhyswynne
-Tags: social media, bluesky, automation, content sharing, traffic generation
+Tags: social media, bluesky, automation, content sharing, traffic generation, syndication
 Requires at least: 5.8
 Tested up to: 6.8
 Stable tag: 1.0.0
@@ -8,7 +8,7 @@ Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Automatically share your old blog posts to Bluesky, increasing traffic and engagement automatically.
+Automatically syndicate your old blog posts to Bluesky on a regular basis, increasing traffic and engagement automatically.
 
 == Description ==
 
@@ -46,6 +46,25 @@ You can install this plugin in two ways:
      * Choose which categories and tags to include or exclude from sharing, giving you full control over which posts are eligible.
      * Customize the format of your shared post using template tags (e.g., `%%POSTTITLE%%` for the post title and `%%POSTURL%%` for the post URL) in the message template field.
    * Save your settings
+
+== External services ==
+
+The plugin connects to the following services and uses the following API's:-
+
+= BlueSky =
+This plugin connects to the Bluesky API to post messages to your Bluesky account. It will post the post title, URL to a post and a featured image, as well as any message you write, on your behalf - at intervals requested. It is needed to run the plugin. 
+
+This service is provided by BlueSky Social, [Privacy Policy](https://bsky.social/about/support/privacy-policy), [Terms of Service](https://bsky.social/about/support/tos).
+
+= Mailerlite =
+This plugin connects to allow users to sign up for a newsletter to receive updates on the plugin from within the plugin's option page. Should you choose to, it will collect a name and email if you fill in the clearly defined form in the plugin's option page. The email list is a double opt in and you can unsubscribe at any time.
+
+This service is provided by Mailerlite, [Privacy Policy](https://www.mailerlite.com/legal/privacy-policy), [Terms of Service](https://www.mailerlite.com/legal/terms-of-service).
+
+= Gravatar =
+This plugin connects to Gravatar to load an image of the plugin developer - Rhys Wynne - to put into the plugin's option page.
+
+This service is provided by Gravatar, [Privacy Policy](https://support.gravatar.com/privacy-and-security/data-privacy/)
 
 == Frequently Asked Questions ==
 

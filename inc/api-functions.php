@@ -1,5 +1,7 @@
 <?php
 
+if (! defined('ABSPATH')) exit; // Exit if accessed directly
+
 /**
  * Connect to Bluesky API and create a post
  *
@@ -8,7 +10,7 @@
  * @param object $authorisation_obj The Authorisation object
  * @return array|WP_Error Response from the API or WP_Error on failure
  */
-function dr_rts_post_to_bluesky($message, $links, $embed, $access_token, $did)
+function revivetosky_post_to_bluesky($message, $facets, $embed, $access_token, $did)
 {
 
     // Build API endpoint URL
@@ -25,13 +27,15 @@ function dr_rts_post_to_bluesky($message, $links, $embed, $access_token, $did)
         )
     );
 
-    if (!empty($links)) {
-        $request_body['record'] = array_merge($request_body['record'], $links);
+    if (!empty($facets)) {
+        $request_body['record'] = array_merge($request_body['record'], $facets);
     }
 
     if (!empty($embed)) {
         $request_body['record'] = array_merge($request_body['record'], $embed);
     }
+
+    revivetosky_debug_log('Posting to Bluesky with body: ' . print_r($request_body, true));
 
     // Build request args
     $args = array(
@@ -55,7 +59,7 @@ function dr_rts_post_to_bluesky($message, $links, $embed, $access_token, $did)
     $response_body = json_decode(wp_remote_retrieve_body($response), true);
 
     if ($response_code !== 200) {
-        
+
         return new WP_Error(
             'api_error',
             sprintf(
@@ -69,8 +73,14 @@ function dr_rts_post_to_bluesky($message, $links, $embed, $access_token, $did)
     return $response_body;
 }
 
-
-function dr_bts_upload_media_to_bluesky($image_id, $access_token)
+/**
+ * This function uploads media to Bluesky and returns the blob reference
+ *
+ * @param  int          $image_id      The Bluesky media attachment ID
+ * @param  string       $access_token  The access token for the Bluesky API
+ * @return string|false                The blob reference or false on failure
+ */
+function revivetosky_upload_media_to_bluesky($image_id, $access_token)
 {
 
     $mime = get_post_mime_type($image_id);
@@ -78,7 +88,7 @@ function dr_bts_upload_media_to_bluesky($image_id, $access_token)
     $image_url = wp_get_attachment_image_url($image_id);
     $image_content = file_get_contents($image_path);
 
-    if ( filesize( $image_content ) > DR_BTS_MAX_IMAGE_SIZE ) {
+    if (filesize($image_content) > REVIVETOSKY_MAX_IMAGE_SIZE) {
         return false;
     }
 
@@ -110,11 +120,64 @@ function dr_bts_upload_media_to_bluesky($image_id, $access_token)
  *
  * @return void
  */
-function dr_rts_get_authorisation_token()
+function revivetosky_get_did_from_handle($handle, $access_token)
+{
+    // Build API endpoint URL
+    $api_url = 'https://bsky.social/xrpc/com.atproto.identity.resolveHandle?handle=' . $handle;
+
+    // Build request args
+    $args = array(
+        'method' => 'GET',
+        'headers' => array(
+            'Content-Type' => 'application/json',
+            'Authorization' => ' Bearer ' . $access_token
+        )
+    );
+
+    $response = wp_remote_get($api_url, $args);
+
+    $response_code = wp_remote_retrieve_response_code($response);
+    $response_body = json_decode(wp_remote_retrieve_body($response), true);
+
+    // Check for errors
+    if (is_wp_error($response)) {
+        return $response;
+    }
+
+    $response_code = wp_remote_retrieve_response_code($response);
+    $response_body = json_decode(wp_remote_retrieve_body($response), true);
+
+    if ($response_code !== 200) {
+        return new WP_Error(
+            'api_error',
+            sprintf(
+                /* translators: 1: Error returned from Bluesky API. */
+                __('Bluesky API error: %s', 'revive-to-sky'),
+                isset($response_body['message']) ? $response_body['message'] : __('Unknown error', 'revive-to-sky')
+            )
+        );
+    } else {
+        if (array_key_exists('did', $response_body)) {
+            return $response_body['did'];
+        } else {
+            return new WP_Error(
+                'api_error',
+                __('Bluesky API error: DID not found in response', 'revive-to-sky')
+            );
+        }
+    }
+}
+
+/**
+ * Get the Authorisation Token from Bluesky
+ *
+ * @return void
+ */
+function revivetosky_get_authorisation_token()
 {
     // Get Bluesky credentials from options
-    $handle       = dr_rts_get_option('dr_rts_bluesky_handle');
-    $app_password = dr_rts_get_option('dr_rts_bluesky_app_password');
+    $handle       = revivetosky_get_option('revivetosky_bluesky_handle');
+    $app_password = revivetosky_get_option('revivetosky_bluesky_app_password');
 
     // Validate credentials exist
     if (empty($handle) || empty($app_password)) {
@@ -172,11 +235,11 @@ function dr_rts_get_authorisation_token()
  *
  * @return void
  */
-function dr_rts_get_refresh_token($refresh_token)
+function revivetosky_get_refresh_token($refresh_token)
 {
     // Get Bluesky credentials from options
-    $handle       = dr_rts_get_option('dr_rts_bluesky_handle');
-    $app_password = dr_rts_get_option('dr_rts_bluesky_app_password');
+    $handle       = revivetosky_get_option('revivetosky_bluesky_handle');
+    $app_password = revivetosky_get_option('revivetosky_bluesky_app_password');
 
     // Validate credentials exist
     if (empty($handle) || empty($app_password)) {
@@ -219,19 +282,19 @@ function dr_rts_get_refresh_token($refresh_token)
     }
 
     if (array_key_exists('accessJwt', $response_body)) {
-        set_transient('rts_access_token', $response_body['accessJwt'], 600);
+        set_transient('revivetosky_access_token', $response_body['accessJwt'], 600);
     }
 
     if (array_key_exists('refreshJwt', $response_body)) {
-        set_transient('rts_refresh_token', $response_body['refreshJwt'], 2 * HOUR_IN_SECONDS);
+        set_transient('revivetosky_refresh_token', $response_body['refreshJwt'], 2 * HOUR_IN_SECONDS);
     }
 
     if (array_key_exists('did', $response_body)) {
-        set_transient('rts_did', $response_body, 2 * HOUR_IN_SECONDS);
+        set_transient('revivetosky_did', $response_body, 2 * HOUR_IN_SECONDS);
     }
 
     if (!is_wp_error($response_body)) {
-        set_transient('rts_obj', $response_body, 2 * HOUR_IN_SECONDS);
+        set_transient('revivetosky_obj', $response_body, 2 * HOUR_IN_SECONDS);
     }
 
     return $response_body;
