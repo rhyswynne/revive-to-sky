@@ -249,6 +249,14 @@ function revivetosky_get_post_to_post_to_bluesky($numberofposts = 1)
         $post_args['tag__not_in'] = $excluded_tags;
     }
 
+    /**
+     * Filter to allow modification of the post query args
+     * 
+     * @param  array $post_args The post args array
+     * @return array            The modified post args array
+     */
+    $post_args = apply_filters('revivetosky_post_query_args', $post_args);
+
     $post_to_skeet = new WP_Query($post_args);
 
     if ($post_to_skeet->have_posts()) {
@@ -525,7 +533,7 @@ function revivetosky_create_mention_card_array_from_mention_array($mentions)
 
     return $mentionfacets;
 }
-{
+/* {
     $hashfacets = array();
     if (!empty($hashtags)) {
         foreach ($hashtags as $hashtag) {
@@ -547,7 +555,7 @@ function revivetosky_create_mention_card_array_from_mention_array($mentions)
     }
 
     return $hashfacets;
-}
+} */
 
 /**
  * Get the Skeet to Post
@@ -566,4 +574,77 @@ function revivetosky_form_skeet_to_post($ptbs)
     $skeet = str_replace('%%POSTURL%%', get_permalink($ptbs), $skeet);
 
     return $skeet;
+}
+
+
+add_action( 'wp_ajax_revivetosky_test_connection', 'revivetosky_test_connection' );
+
+function revivetosky_test_connection() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
+    }
+    if (
+        empty( $_POST['nonce'] ) ||
+        ! wp_verify_nonce( $_POST['nonce'], 'revivetosky_test_connection_nonce' )
+    ) {
+        wp_send_json_error( [ 'message' => 'Invalid security token.' ], 403 );
+    }
+
+    $handle       = sanitize_text_field( $_POST['handle'] ?? '' );
+    $app_password = sanitize_text_field( $_POST['app_password'] ?? '' );
+
+    if ( empty( $handle ) || empty( $app_password ) ) {
+        wp_send_json_error( [ 'message' => 'Missing handle or app password.' ], 400 );
+    }
+
+    // Build request body
+    $request_body = array(
+        'identifier' => $handle,
+        'password' => $app_password
+    );
+
+    // Build request args
+    $args = array(
+        'method' => 'POST',
+        'headers' => array(
+            'Content-Type' => 'application/json',
+        ),
+        'body' => wp_json_encode($request_body),
+        'timeout' => 30,
+        'sslverify' => true
+    );
+
+    $auth_url = 'https://bsky.social/xrpc/com.atproto.server.createSession';
+
+    $response = wp_remote_post($auth_url, $args);
+
+    revivetosky_debug_log('Test Connection Response: ' . print_r($response, true));
+
+    if ( is_wp_error( $response ) ) {
+        wp_send_json_error(
+            [ 'message' => $response->get_error_message() ],
+            500
+        );
+    }
+
+    $code = wp_remote_retrieve_response_code( $response );
+    $body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+    if ( $code === 200 ) {
+        wp_send_json_success( [ 'message' => 'Revive to Sky was able to connect to the Bluesky API successfully. Please save your settings.' ] );
+    }
+
+    if ( $code === 429 ) {
+        wp_send_json_error(
+            [ 'message' => 'Rate limit exceeded. Please wait 30–60 minutes before trying again.' ],
+            429
+        );
+    }
+
+    wp_send_json_error(
+        [ 'message' => $body['message'] ?? 'Connection failed.',
+        'data' => json_encode( $body ),
+        'code' => $code],
+        $code
+    );
 }

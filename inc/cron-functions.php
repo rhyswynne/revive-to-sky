@@ -11,8 +11,6 @@ if (! defined('ABSPATH')) exit; // Exit if accessed directly
  */
 function revivetosky_cron_event()
 {
-
-
     $last_posted = get_option('revivetosky_last_post_posted', 0);
 
     if (time() >= $last_posted) {
@@ -89,6 +87,8 @@ function revivetosky_get_random_post_and_post_to_bluesky()
                 $did = esc_attr($auth_response['did']);
             }
         }
+    } else {
+        revivetosky_debug_log('Using cached access token');
     }
 
     if ($access_token && $did) {

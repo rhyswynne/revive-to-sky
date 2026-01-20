@@ -144,7 +144,7 @@ function revivetosky_bluesky_handle_render()
 
     $revivetosky_bluesky_handle = revivetosky_get_option('revivetosky_bluesky_handle');
 ?>
-    <input type='text' name='revivetosky_settings[revivetosky_bluesky_handle]' value='<?php echo esc_attr($revivetosky_bluesky_handle); ?>'><br />
+    <input type='text' id="revivetosky_bluesky_handle" name='revivetosky_settings[revivetosky_bluesky_handle]' value='<?php echo esc_attr($revivetosky_bluesky_handle); ?>'><br />
     <p class="description"><?php esc_html_e('Put your Bluesky Handle here.', 'revive-to-sky'); ?></p>
 <?php
 }
@@ -160,7 +160,7 @@ function revivetosky_bluesky_app_password_render()
 
     $revivetosky_bluesky_app_password = revivetosky_get_option('revivetosky_bluesky_app_password');
 ?>
-    <input type='text' name='revivetosky_settings[revivetosky_bluesky_app_password]' value='<?php echo esc_attr($revivetosky_bluesky_app_password); ?>' <br />
+    <input type='text' id="revivetosky_bluesky_app_password" name='revivetosky_settings[revivetosky_bluesky_app_password]' value='<?php echo esc_attr($revivetosky_bluesky_app_password); ?>' />
     <p class="description">
         <?php
         printf(
@@ -179,6 +179,10 @@ function revivetosky_bluesky_app_password_render()
         );
         ?>
     </p>
+    <p class="test-button-wrap">
+        <button type="button" class="button" id="revivetosky_test_connection_button"><?php esc_html_e('Test Connection', 'revive-to-sky'); ?></button>
+    </p>
+    <div id="revivetosky_test_connection_result"></div>
 <?php
 }
 
@@ -223,7 +227,7 @@ function revivetosky_message_every_settings_render()
  */
 function revivetosky_categories_to_include_render()
 {
-    $selected_categories = revivetosky_get_option('revivetosky_ategories_to_include_settings');
+    $selected_categories = revivetosky_get_option('revivetosky_categories_to_include_settings');
 
     $categories = revivetosky_get_categories();
 
@@ -244,7 +248,7 @@ function revivetosky_categories_to_include_render()
 
     echo '</div>';
     ?>
-    <p class="description"><?php esc_html_e('Select which post categories for which to pull blog posts to post to Bluesky.', 'revive-to-sky'); ?></p>
+    <p class="description"><?php esc_html_e('Select which post categories for which to pull blog posts to post to Bluesky. If none are selected, all categories will be used.', 'revive-to-sky'); ?></p>
     <?php
 }
 

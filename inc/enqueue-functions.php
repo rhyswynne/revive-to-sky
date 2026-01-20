@@ -20,9 +20,27 @@ function revivetosky_enqueue_on_option_page() {
         'revivetosky_admin_js',
         REVIVETOSKY_URL . '/inc/js/admin.js',
         array( 'mailerlite-webforms' ),
-        '1.0.0',
+        REVIVETOSKY_PLUGIN_VERSION,
         true
     );
+
+    wp_register_script(  'revivetosky_test_connection_js',
+        REVIVETOSKY_URL . '/inc/js/test-connection.js',
+        array( ),
+        REVIVETOSKY_PLUGIN_VERSION,
+        true 
+        );
+
+    wp_localize_script(
+        'revivetosky_test_connection_js',
+        'revivetosky_test_connection_obj',
+        array(
+            'ajax_url' => admin_url( 'admin-ajax.php' ),
+            'nonce'    => wp_create_nonce( 'revivetosky_test_connection_nonce' ),
+        )
+    );
+
+    wp_enqueue_script( 'revivetosky_test_connection_js' );
 }
 
 

@@ -173,10 +173,9 @@ function revivetosky_get_did_from_handle($handle, $access_token)
  *
  * @return void
  */
-function revivetosky_get_authorisation_token()
+function revivetosky_get_authorisation_token( $handle = false, $app_password = false )
 {
-    // Get Bluesky credentials from options
-    $handle       = revivetosky_get_option('revivetosky_bluesky_handle');
+    $handle = revivetosky_get_option('revivetosky_bluesky_handle');
     $app_password = revivetosky_get_option('revivetosky_bluesky_app_password');
 
     // Validate credentials exist
