@@ -45,8 +45,11 @@ function revivetosky_get_random_post_and_post_to_bluesky()
 
     revivetosky_debug_log('Post to bluesky with title ' . get_the_title($ptbs) . '.');
     revivetosky_debug_log('Skeet: ' . $skeet);
+    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
     revivetosky_debug_log('Hashtags: ' . print_r($skeethash, true));
+    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
     revivetosky_debug_log('Mentions: ' . print_r($skeetment, true));
+    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
     revivetosky_debug_log('Links: ' . print_r($skeeturls, true));
 
     $links    = revivetosky_create_link_card_array_from_url_array($skeeturls);
@@ -100,7 +103,6 @@ function revivetosky_get_random_post_and_post_to_bluesky()
         // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
         revivetosky_debug_log('Skeet Response: ' . print_r($skeet_response, true));
 
-        //wp_die( print_r( $skeet_response ) );
         if (array_key_exists('uri', $skeet_response)) {
             if (array_key_exists('commit', $skeet_response)) {
                 if (array_key_exists('rev', $skeet_response['commit'])) {

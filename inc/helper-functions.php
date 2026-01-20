@@ -339,8 +339,6 @@ function revivetosky_get_mentions($text)
     $regex = '/@[A-Za-z0-9._-]+/';
     preg_match_all($regex, $text, $matches, PREG_OFFSET_CAPTURE);
 
-    //wp_die( "Text: " . $text . "Matches: " . print_r( $matches, true ) );
-
     $mentions = array();
 
     if (!empty($matches[0])) {
@@ -371,19 +369,19 @@ function revivetosky_get_mentions($text)
 
         if ($access_token) {
             foreach ($matches[0] as $match) {
-                $did = revivetosky_get_did_from_handle(substr($match[0], 1), $access_token );
-                
-                if ( !is_wp_error( $did) ) {
+                $did = revivetosky_get_did_from_handle(substr($match[0], 1), $access_token);
+
+                if (!is_wp_error($did)) {
                     $start = $match[1];
                     $end = $match[1] + strlen($match[0]);
-    
+
                     $mentions[] = array(
                         'start' => $start,
                         'end' => $end,
                         'did' => $did,
                     );
                 } else {
-                    revivetosky_debug_log( $did->get_error_message() );
+                    revivetosky_debug_log($did->get_error_message());
                 }
             }
         }
@@ -577,25 +575,33 @@ function revivetosky_form_skeet_to_post($ptbs)
 }
 
 
-add_action( 'wp_ajax_revivetosky_test_connection', 'revivetosky_test_connection' );
+add_action('wp_ajax_revivetosky_test_connection', 'revivetosky_test_connection');
 
-function revivetosky_test_connection() {
-    if ( ! current_user_can( 'manage_options' ) ) {
-        wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
+function revivetosky_test_connection()
+{
+    if (! current_user_can('manage_options')) {
+        wp_send_json_error(['message' => 'Unauthorized'], 403);
     }
     if (
-        empty( $_POST['nonce'] ) ||
-        ! wp_verify_nonce( $_POST['nonce'], 'revivetosky_test_connection_nonce' )
+        empty($_POST['revivetosky_test_nonce'])
     ) {
-        wp_send_json_error( [ 'message' => 'Invalid security token.' ], 403 );
+        wp_send_json_error(['message' => 'No security token.'], 403);
     }
 
-    $handle       = sanitize_text_field( $_POST['handle'] ?? '' );
-    $app_password = sanitize_text_field( $_POST['app_password'] ?? '' );
-
-    if ( empty( $handle ) || empty( $app_password ) ) {
-        wp_send_json_error( [ 'message' => 'Missing handle or app password.' ], 400 );
+    $nonce = sanitize_text_field(wp_unslash($_POST['revivetosky_test_nonce']));
+    if (! wp_verify_nonce($nonce, 'revivetosky_test_connection_nonce')) {
+        wp_send_json_error(['message' => 'Invalid security token.'], 403);
     }
+
+    if (
+        empty($_POST['revivetosky_test_handle']) ||
+        empty($_POST['revivetosky_test_app_password'])
+    ) {
+        wp_send_json_error(['message' => 'Missing handle or app password.'], 400);
+    }
+
+    $handle       = sanitize_text_field(wp_unslash($_POST['revivetosky_test_handle']));
+    $app_password = sanitize_text_field(wp_unslash($_POST['revivetosky_test_app_password']));
 
     // Build request body
     $request_body = array(
@@ -618,33 +624,37 @@ function revivetosky_test_connection() {
 
     $response = wp_remote_post($auth_url, $args);
 
+
+    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
     revivetosky_debug_log('Test Connection Response: ' . print_r($response, true));
 
-    if ( is_wp_error( $response ) ) {
+    if (is_wp_error($response)) {
         wp_send_json_error(
-            [ 'message' => $response->get_error_message() ],
+            ['message' => $response->get_error_message()],
             500
         );
     }
 
-    $code = wp_remote_retrieve_response_code( $response );
-    $body = json_decode( wp_remote_retrieve_body( $response ), true );
+    $code = wp_remote_retrieve_response_code($response);
+    $body = json_decode(wp_remote_retrieve_body($response), true);
 
-    if ( $code === 200 ) {
-        wp_send_json_success( [ 'message' => 'Revive to Sky was able to connect to the Bluesky API successfully. Please save your settings.' ] );
+    if ($code === 200) {
+        wp_send_json_success(['message' => 'Revive to Sky was able to connect to the Bluesky API successfully. Please save your settings.']);
     }
 
-    if ( $code === 429 ) {
+    if ($code === 429) {
         wp_send_json_error(
-            [ 'message' => 'Rate limit exceeded. Please wait 30–60 minutes before trying again.' ],
+            ['message' => 'Rate limit exceeded. Please wait 30–60 minutes before trying again.'],
             429
         );
     }
 
     wp_send_json_error(
-        [ 'message' => $body['message'] ?? 'Connection failed.',
-        'data' => json_encode( $body ),
-        'code' => $code],
+        [
+            'message' => $body['message'] ?? 'Connection failed.',
+            'data' => json_encode($body),
+            'code' => $code
+        ],
         $code
     );
 }

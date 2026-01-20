@@ -35,6 +35,7 @@ function revivetosky_post_to_bluesky($message, $facets, $embed, $access_token, $
         $request_body['record'] = array_merge($request_body['record'], $embed);
     }
 
+    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
     revivetosky_debug_log('Posting to Bluesky with body: ' . print_r($request_body, true));
 
     // Build request args

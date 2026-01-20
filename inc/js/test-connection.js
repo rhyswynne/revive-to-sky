@@ -29,9 +29,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({
                     action: 'revivetosky_test_connection',
-                    handle: handle,
-                    app_password: appPassword,
-                    nonce: revivetosky_test_connection_obj.nonce
+                    revivetosky_test_handle: handle,
+                    revivetosky_test_app_password: appPassword,
+                    revivetosky_test_nonce: revivetosky_test_connection_obj.nonce
                 }),
             });
             const data = await response.json();
